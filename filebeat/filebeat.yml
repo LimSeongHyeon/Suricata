@@ -1,0 +1,19 @@
+filebeat.config.modules:
+  path: ${path.config}/modules.d/*.yml
+  reload.enabled: false  # 모듈 변경 시 자동 재로드 비활성화 (필요 시 true로 설정)
+
+filebeat.inputs:
+  - type: log
+    enabled: true
+    paths:
+      - /var/log/suricata/eve.json  # Suricata 로그 파일 경로
+
+output.elasticsearch:
+  hosts: ["elasticsearch:9200"]
+  username: "elastic"
+  password: "<password>"
+
+setup.kibana:
+  host: "http://kibana:5601"
+
+setup.ilm.enabled: false

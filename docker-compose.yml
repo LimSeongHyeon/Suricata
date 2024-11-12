@@ -12,6 +12,49 @@ services:
     ports:
       - "80:80"
 
+  # Filebeat 서비스
+  filebeat:
+    build: ./filebeat
+    container_name: filebeat
+    volumes:
+      - ./logs:/var/log/suricata  # Suricata 로그가 있는 호스트 경로를 컨테이너와 연결
+      - ./filebeat/filebeat.yml:/usr/share/filebeat/filebeat.yml  # filebeat.yml 설정 파일을 컨테이너에 복사
+    entrypoint: ["sh", "-c", "filebeat setup -E setup.kibana.host=http://kibana:5601 -E output.elasticsearch.hosts=[\"http://elasticsearch:9200\"] && filebeat -e -modules=suricata"]
+    restart: always
+    depends_on:
+      - kibana
+
+  # # Logstash - Suricata 로그를 Elasticsearch로 전송
+  # logstash:
+  #   image: docker.elastic.co/logstash/logstash:7.10.0
+  #   container_name: logstash
+  #   volumes:
+  #     - ./logs:/var/log/suricata
+  #     - ./logstash/logstash.conf:/usr/share/logstash/pipeline/logstash.conf  # Logstash 설정 파일
+  #   depends_on:
+  #     - elasticsearch
+
+
+  # Elasticsearch - 로그 저장 및 검색
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.10.0
+    container_name: elasticsearch
+    environment:
+      - discovery.type=single-node
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+      - "http.max_content_length=10mb"
+    ports:
+      - "9200:9200"
+
+  # Kibana - 시각화
+  kibana:
+    build: ./kibana
+    container_name: kibana
+    ports:
+      - "5601:5601"
+    depends_on:
+      - elasticsearch
+
   fastapi:
     build: ./app
     container_name: fastapi_app
