@@ -1,0 +1,2 @@
+# ./rules/local.rules
+alert http any any -> any any (msg:"Test HTTP Alert"; sid:1000001; rev:1;)

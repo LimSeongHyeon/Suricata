@@ -1,0 +1,19 @@
+version: '3'
+
+services:
+  nginx:
+    build: ./proxy
+    container_name: nginx_proxy
+    cap_add:
+      - NET_ADMIN
+      - SYS_NICE
+    volumes:
+      - ./logs:/var/log/suricata
+    ports:
+      - "80:80"
+
+  fastapi:
+    build: ./app
+    container_name: fastapi_app
+    expose:
+      - "8000"
