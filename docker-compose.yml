@@ -2,15 +2,15 @@ version: '3'
 
 services:
   nginx:
-    build: ./proxy
-    container_name: nginx_proxy
+    build: ./suricata
+    container_name: suricata
     cap_add:
       - NET_ADMIN
+      - NET_RAW
       - SYS_NICE
     volumes:
       - ./logs:/var/log/suricata
-    ports:
-      - "80:80"
+    network_mode: "host"
 
   # Filebeat 서비스
   filebeat:
@@ -58,5 +58,5 @@ services:
   fastapi:
     build: ./app
     container_name: fastapi_app
-    expose:
-      - "8000"
+    ports:
+      - "8000:8000"
