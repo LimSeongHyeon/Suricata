@@ -8,11 +8,12 @@ RUN apt-get install software-properties-common -y
 RUN add-apt-repository ppa:oisf/suricata-stable -y
 RUN apt-get update -y
 RUN apt-get install suricata -y
+RUN apt install -y nginx
 
 RUN suricata-update
 RUN sed -i 's/^RUN=.*/RUN="yes"/' /etc/default/suricata
 
-#COPY nginx.conf /etc/nginx/nginx.conf
+COPY nginx.conf /etc/nginx/nginx.conf
 COPY suricata.yaml /etc/suricata/suricata.yaml
 COPY local.rules /var/lib/suricata/rules/local.rules
 

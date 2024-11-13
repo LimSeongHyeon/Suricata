@@ -24,16 +24,6 @@ services:
     depends_on:
       - kibana
 
-  # # Logstash - Suricata 로그를 Elasticsearch로 전송
-  # logstash:
-  #   image: docker.elastic.co/logstash/logstash:7.10.0
-  #   container_name: logstash
-  #   volumes:
-  #     - ./logs:/var/log/suricata
-  #     - ./logstash/logstash.conf:/usr/share/logstash/pipeline/logstash.conf  # Logstash 설정 파일
-  #   depends_on:
-  #     - elasticsearch
-
 
   # Elasticsearch - 로그 저장 및 검색
   elasticsearch:
@@ -43,20 +33,20 @@ services:
       - discovery.type=single-node
       - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
       - "http.max_content_length=10mb"
-    ports:
-      - "9200:9200"
+    expose:
+      - "9200"
 
   # Kibana - 시각화
   kibana:
     build: ./kibana
     container_name: kibana
-    ports:
-      - "5601:5601"
+    expose:
+      - "5601"
     depends_on:
       - elasticsearch
 
   fastapi:
     build: ./app
     container_name: fastapi_app
-    ports:
-      - "8000:8000"
+    expose:
+      - "8000"
